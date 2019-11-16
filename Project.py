@@ -93,10 +93,6 @@ def updateDisplay():
 def bingo():
         setOpenedCarDoorImg()
         updateDisplay()
-        time.sleep(3)
-        setClosedCarDoorImg()
-        updateDisplay()
-        time.sleep(3)
 
 # a mouse click event has occured, change images position and try authenticate
 def changePositions():
@@ -150,24 +146,40 @@ def changePositions():
             # try authenticate here
             tryAuthenticate()
 
-# try authenticate
+# try authenticate and print
 def tryAuthenticate():
         global key_home
         global car_thief
         # key is home and thief is not there
         if key_home == True and car_thief == False:
+                setClosedCarDoorImg()
+                updateDisplay()
                 print("No signals detected by car")
+                print("\n")
         
         # key is home and thief is there (Relay attack)
         elif key_home == True and car_thief == True:
+                setClosedCarDoorImg()
+                updateDisplay()
                 print("Signals detected by car, starting authentication process...")
+                print("Car signed and sent a message to key fob...Setting timeout duration for response...")
+                print("Timed out...Please try again...")
+                print("\n")
 
         # key is not home and thief is not there (car owner unlocking)
         elif key_home == False and car_thief == False:
                 print("Signals detected by car, starting authentication process...")
+                print("Car signed and sent a message to key fob...Setting timeout duration for response...")
+                print("Car received a signed message within timeout window...Verifying message...")
+                print("Message verified...Unlocking...")
+                print("\n")
+                bingo()
 
         else:
+                setClosedCarDoorImg()
+                updateDisplay()
                 print("Car thief is arrested")
+                print("\n")
                 resetAll()
 
 

@@ -1,6 +1,6 @@
 # CPEN442-Prototype
 Design Project:
-A simulation of Car Relay Theft Prevention using pygame and console windows
+A simulation of Car Relay Theft Prevention using pygame 2.0.0.dev4 and console windows
 
 Why is this problem important?
 Car Relay Theft: common, cheap, easy to execute
