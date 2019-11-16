@@ -16,12 +16,12 @@ How is this problem currently addressed by others?
 
 What is the way we are proposing to address the problem?
 - Dual authentication “public key” system
+    Key fob says Hi -> Car
     Car signs a message -> Key fob
     Key fob verifies message using car’s public key
     Key fob signs same message -> Car
     Car verifies message is the same
-    Key fob initiates above procedure in case of failure, followed by a safety time-out if process fails again
-    Time-stamp used as nonce
+    (Everytime an RF signal is sent from the car, the car sets a timeout based on the time needed for a Radio Repeater to retransmit. If a response is received inside the timeout window, it is implied that no Radio Repeater is used i.e. no man-in-the-middle)
 
 Why and in what respect is our way to address the problem better than others?
 - Existing solutions vulnerable to signal skimming
