@@ -5,6 +5,9 @@ import time
 
 screen = pygame.display.set_mode((0, 0))
 pos = (0, 0)
+# initially positions of key and thief
+key_home = True
+car_thief = False
 
 # grabbing the image to return
 def get_image(path):
@@ -75,6 +78,7 @@ def bingo():
 def changePositions():
         # clicking fob image on the right
         if pos[0] >= 640 and pos[0] <= 788 and pos[1] >= 170 and pos[1] <= 318:
+            key_home = False
             clearScreen()
             setClosedCarDoorImg()
             drawHouse()
@@ -86,6 +90,7 @@ def changePositions():
 
         # clicking fob image on the left
         elif pos[0] >= 300 and pos[0] <= 428 and pos[1] >= 180 and pos[1] <= 308:
+            key_home = True
             clearScreen()
             setClosedCarDoorImg()
             drawHouse()
@@ -97,6 +102,7 @@ def changePositions():
 
         # clicking attacker image at the bottom
         elif pos[0] >= 400 and pos[0] <= 528 and pos[1] >= 372 and pos[1] <= 500:
+            car_thief = True
             clearScreen()
             setClosedCarDoorImg()
             drawHouse()
@@ -106,8 +112,9 @@ def changePositions():
             tryAuthenticate()
             updateDisplay()
 
-        # clicking attacker image at the top (650, 180, 128, 128)
+        # clicking attacker image at the top
         elif pos[0] >= 400 and pos[0] <= 528 and pos[1] >= 180 and pos[1] <= 308:
+            car_thief = False
             clearScreen()
             setClosedCarDoorImg()
             drawHouse()
