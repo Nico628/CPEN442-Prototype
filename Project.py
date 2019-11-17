@@ -2,12 +2,18 @@ import sys
 import pygame
 import os
 import time
+import threading
 
 screen = pygame.display.set_mode((0, 0))
 pos = (0, 0)
 # initially positions of key and thief
 key_home = True
 car_thief = False
+timeout = 1
+car_done = False
+key_done = False
+car_msg = "car"
+key_msg = "key"
 
 # grabbing the image to return
 def get_image(path):
@@ -150,6 +156,9 @@ def changePositions():
 def tryAuthenticate():
         global key_home
         global car_thief
+        global key_done
+        global car_done
+
         # key is home and thief is not there
         if key_home == True and car_thief == False:
                 setClosedCarDoorImg()
@@ -159,21 +168,33 @@ def tryAuthenticate():
         
         # key is home and thief is there (Relay attack)
         elif key_home == True and car_thief == True:
-                setClosedCarDoorImg()
-                updateDisplay()
                 print("Signals detected by car, starting authentication process...")
-                print("Car signed and sent a message to key fob...Setting timeout duration for response...")
-                print("Timed out...Please try again...")
-                print("\n")
+
+                thread1 = keyThread(1, "Thread-Key", )
+                thread2 = carThread(2, "Thread-Car", )
+
+                thread1.start()
+                thread2.start()
+                thread1.join()
+                thread2.join()
+                
+                key_done = False
+                car_done = False
 
         # key is not home and thief is not there (car owner unlocking)
         elif key_home == False and car_thief == False:
                 print("Signals detected by car, starting authentication process...")
-                print("Car signed and sent a message to key fob...Setting timeout duration for response...")
-                print("Car received a signed message within timeout window...Verifying message...")
-                print("Message verified...Unlocking...")
-                print("\n")
-                bingo()
+
+                thread1 = keyThread(1, "Thread-Key", )
+                thread2 = carThread(2, "Thread-Car", )
+
+                thread1.start()
+                thread2.start()
+                thread1.join()
+                thread2.join()
+
+                key_done = False
+                car_done = False
 
         else:
                 setClosedCarDoorImg()
@@ -181,6 +202,90 @@ def tryAuthenticate():
                 print("Car thief is arrested")
                 print("\n")
                 resetAll()
+
+class carThread (threading.Thread):
+        def __init__(self, threadID, name):
+                threading.Thread.__init__(self)
+                self.threadID = threadID
+                self.name = name
+        def run(self):
+                protocol_car()
+
+class keyThread (threading.Thread):
+        def __init__(self, threadID, name):
+                threading.Thread.__init__(self)
+                self.threadID = threadID
+                self.name = name
+        def run(self):
+                protocol_key()
+
+
+
+def protocol_key():
+        global timeout
+        global car_done
+        global key_done
+        global car_msg
+        global key_msg
+
+        while car_done == False:
+                pass
+
+        if car_thief == True:
+                time.sleep(timeout)
+        
+        # verify car
+        print("Car message verified...\n")
+
+        # set key msg
+        key_msg = "Key sending message"
+
+        print("Key signed and sent a message to car...\n")
+
+        if car_thief == True:
+                time.sleep(timeout)
+
+        # set key msg prepared to done
+        key_done = True
+
+
+
+def protocol_car():
+        global timeout
+        global car_done
+        global key_done
+        global car_msg
+        global key_msg
+
+        # set car msg
+        car_msg = "Car sending message"
+
+        # set car msg prepared to done
+        car_done = True
+
+        print("Car signed and sent a message to key fob...Setting timeout duration for response...\n")
+
+        start_time = time.time()
+        if car_thief == True:
+                time.sleep(timeout*2)
+
+        while time.time() - start_time <= timeout and key_done == False:
+                pass
+
+        if key_done == False:
+                # failed authentication
+                setClosedCarDoorImg()
+                updateDisplay()
+
+                print("Timed out...Please try again...")
+                print("\n")
+        else:
+                print("Car received a signed message within timeout window...Verifying message...")
+                # verify msg
+                print("Message verified...Unlocking...")
+                print("\n")
+                bingo()
+
 
 
 initialization()
