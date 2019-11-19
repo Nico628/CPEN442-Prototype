@@ -3,6 +3,8 @@ import pygame
 import os
 import time
 import threading
+import nacl.signing
+import random
 
 screen = pygame.display.set_mode((0, 0))
 pos = (0, 0)
@@ -12,8 +14,16 @@ car_thief = False
 timeout = 1
 car_done = False
 key_done = False
-car_msg = "car"
-key_msg = "key"
+car_msg = None
+key_msg = None
+
+# create digital signatures for car
+car_private_key = nacl.signing.SigningKey.generate()
+car_public_key = car_private_key.verify_key
+
+# create digital signatures for key
+fob_private_key = nacl.signing.SigningKey.generate()
+fob_public_key = fob_private_key.verify_key
 
 # grabbing the image to return
 def get_image(path):
@@ -168,7 +178,7 @@ def tryAuthenticate():
         
         # key is home and thief is there (Relay attack)
         elif key_home == True and car_thief == True:
-                print("Signals detected by car, starting authentication process...")
+                print("\nCar: Signal detected, starting authentication process...")
 
                 thread1 = keyThread(1, "Thread-Key", )
                 thread2 = carThread(2, "Thread-Car", )
@@ -183,7 +193,7 @@ def tryAuthenticate():
 
         # key is not home and thief is not there (car owner unlocking)
         elif key_home == False and car_thief == False:
-                print("Signals detected by car, starting authentication process...")
+                print("\nCar: Signal detected, starting authentication process...")
 
                 thread1 = keyThread(1, "Thread-Key", )
                 thread2 = carThread(2, "Thread-Car", )
@@ -227,6 +237,8 @@ def protocol_key():
         global key_done
         global car_msg
         global key_msg
+        global car_public_key
+        global fob_private_key
 
         while car_done == False:
                 pass
@@ -234,13 +246,17 @@ def protocol_key():
         if car_thief == True:
                 time.sleep(timeout)
         
-        # verify car
-        print("Car message verified...\n")
+        # verify car msg
+        try:
+                car_public_key.verify(car_msg)
+                print("Key: Car message verified...")
+        except:
+                print("Key: Car message NOT verified...")
+                return
 
-        # set key msg
-        key_msg = "Key sending message"
-
-        print("Key signed and sent a message to car...\n")
+        # set car msg as key msg
+        key_msg = fob_private_key.sign(car_msg.message)
+        print("Key: Signed and sent a message to car...\n")
 
         if car_thief == True:
                 time.sleep(timeout)
@@ -256,14 +272,17 @@ def protocol_car():
         global key_done
         global car_msg
         global key_msg
+        global car_private_key
+        global fob_public_key
 
-        # set car msg
-        car_msg = "Car sending message"
+        # set a random number as car msg
+        random_number = random.randint(0, sys.maxsize)
+        car_msg = car_private_key.sign(random_number.to_bytes(20, byteorder='big'))
 
         # set car msg prepared to done
         car_done = True
 
-        print("Car signed and sent a message to key fob...Setting timeout duration for response...\n")
+        print("Car: Signed and sent a message to key fob...Setting timeout duration for response...\n")
 
         start_time = time.time()
         if car_thief == True:
@@ -277,14 +296,18 @@ def protocol_car():
                 setClosedCarDoorImg()
                 updateDisplay()
 
-                print("Timed out...Please try again...")
+                print("Car: Timed out...Please try again...")
                 print("\n")
         else:
-                print("Car received a signed message within timeout window...Verifying message...")
+                print("Car: Received a signed message within timeout window...Verifying message...")
                 # verify msg
-                print("Message verified...Unlocking...")
-                print("\n")
-                bingo()
+                try:
+                        fob_public_key.verify(key_msg)
+                        print("Car: Key message verified...Unlocking...")
+                        print("\n")
+                        bingo()
+                except:
+                        print("Car: Key message NOT verified...\n")
 
 
 
