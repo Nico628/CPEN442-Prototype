@@ -173,12 +173,12 @@ def tryAuthenticate():
         if key_home == True and car_thief == False:
                 setClosedCarDoorImg()
                 updateDisplay()
-                print("No signals detected by car")
+                print("Handle not touched...")
                 print("\n")
         
         # key is home and thief is there (Relay attack)
         elif key_home == True and car_thief == True:
-                print("\nCar: Signal detected, starting authentication process...")
+                print("\nCar: Handle touched, starting authentication process...")
 
                 thread1 = keyThread(1, "Thread-Key", )
                 thread2 = carThread(2, "Thread-Car", )
@@ -193,7 +193,7 @@ def tryAuthenticate():
 
         # key is not home and thief is not there (car owner unlocking)
         elif key_home == False and car_thief == False:
-                print("\nCar: Signal detected, starting authentication process...")
+                print("\nCar: Handle touched, starting authentication process...")
 
                 thread1 = keyThread(1, "Thread-Key", )
                 thread2 = carThread(2, "Thread-Car", )
