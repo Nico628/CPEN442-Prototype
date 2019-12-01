@@ -244,7 +244,7 @@ def protocol_key():
                 pass
 
         if car_thief == True:
-                time.sleep(timeout)
+                time.sleep(timeout*2)
         
         # verify car msg
         try:
@@ -259,7 +259,7 @@ def protocol_key():
         print("Key: Signed and sent a message to car...\n")
 
         if car_thief == True:
-                time.sleep(timeout)
+                time.sleep(timeout*2)
 
         # set key msg prepared to done
         key_done = True
@@ -282,13 +282,11 @@ def protocol_car():
         # set car msg prepared to done
         car_done = True
 
+        start_time = time.time()
+
         print("Car: Signed and sent a message to key fob...Setting timeout duration for response...\n")
 
-        start_time = time.time()
-        if car_thief == True:
-                time.sleep(timeout*2)
-
-        while time.time() - start_time <= timeout and key_done == False:
+        while time.time() - start_time <= 4*timeout and key_done == False:
                 pass
 
         if key_done == False:
