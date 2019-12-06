@@ -16,6 +16,7 @@ car_done = False
 key_done = False
 car_msg = None
 key_msg = None
+cwd = os.getcwd()
 
 # create digital signatures for car
 car_private_key = nacl.signing.SigningKey.generate()
@@ -64,28 +65,28 @@ def resetAll():
 # set closed car door image
 def setClosedCarDoorImg():
         global screen
-        image = get_image('/Users/nico/Desktop/CPEN442-Prototype/DoorClosed.png')
+        image = get_image(cwd + '/DoorClosed.png')
         image = pygame.transform.scale(image, (240, 180))
         screen.blit(image, (20, 150))
 
 # set opened car door image
 def setOpenedCarDoorImg():
         global screen
-        image = get_image('/Users/nico/Desktop/CPEN442-Prototype/DoorOpen.png')
+        image = get_image(cwd + '/DoorOpen.png')
         image = pygame.transform.scale(image, (240, 180))
         screen.blit(image, (20, 150))
 
 # set key fob
 def setFobImg(x, y):
         global screen
-        image = get_image('/Users/nico/Desktop/CPEN442-Prototype/Fob.png')
+        image = get_image(cwd + '/Fob.png')
         image = pygame.transform.scale(image, (128, 128))
         screen.blit(image, (x, y))
 
 # set attacker
 def setAttackerImg(x, y):
         global screen
-        image = get_image('/Users/nico/Desktop/CPEN442-Prototype/Thief.png')
+        image = get_image(cwd + '/Thief.png')
         image = pygame.transform.scale(image, (128, 128))
         screen.blit(image, (x, y))
 
